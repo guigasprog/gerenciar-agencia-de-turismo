@@ -148,9 +148,29 @@ bool buscaAleatoriaGuia (struct Guia *guia, struct Index_Guia *indicesGuia, int 
         cout << "\tEndereço: " << guia[i].endereco;
         cout << "\tTelefone: " << guia[i].telefone;
         cout << "\tCodCidade: " << guia[i].codigo_cidade << endl;
-        return false;
+        return true;
     } else cout << "Guia nao Encontrada!\n";
-    return true;
+    return false;
+}
+
+bool buscaAleatoriaCliente (struct Cliente *cliente, struct Index_Cliente *indicesCliente, int &cont, int cod){
+    int i = 0, f = cont;
+    int m = (i + f) / 2;
+    for (; f >= i && cod != indicesCliente[m].codigo; m = (i + f) / 2){
+        if (cod > indicesCliente[m].codigo)
+            i = m + 1;
+        else
+            f = m - 1;
+    }
+    if (cod == indicesCliente[m].codigo){
+        i = indicesCliente[m].index;
+        cout << "\nCodigo do Cliente: " << cliente[i].codigo;
+        cout << "\tNome: " << cliente[i].nome;
+        cout << "\tEndereço: " << cliente[i].endereco;
+        cout << "\tCodCidade: " << cliente[i].codigo_cidade << endl;
+        return true;
+    } else cout << "Cliente nao Encontrada!\n";
+    return false;
 }
 
  /**
@@ -210,7 +230,7 @@ void inclusaoGuia (struct Index_Guia indicesGuia[], struct Guia guia[],
                    struct Index_Cidade indicesCidade[], struct Cidade cidades[],
                    struct Index_Pais indicesPais[], struct Pais paises[],
                    int &cont, int indexCidade, int indexPais, int cod){
-    // inclusao do novo registro na area de dados
+
     guia[cont].codigo = cod;
     cout << "Nome: ";
     cin >> guia[cont].nome;
@@ -220,6 +240,8 @@ void inclusaoGuia (struct Index_Guia indicesGuia[], struct Guia guia[],
     cin >> guia[cont].telefone;
     cout << "Codigo Cidade: ";
     cin >> guia[cont].codigo_cidade;
+    guia[cont].exclusao = 0;
+
     for(;buscaAleatoriaCidade(cidades, indicesCidade, paises, indicesPais, indexCidade,
                               indexPais, guia[cont].codigo_cidade);) {
         cout << "\nInforme outro codigo da Cidade: "; cin >> guia[cont].codigo_cidade;
@@ -231,6 +253,39 @@ void inclusaoGuia (struct Index_Guia indicesGuia[], struct Guia guia[],
     }
     indicesGuia[i+1].codigo = cod;
     indicesGuia[i+1].index = cont;
+    cont++;
+    cout << "\n\nInclusao realizada com Sucesso!\n";
+}
+
+ /**
+  * INICIO - 3) função que permite a inclusão de novos registros na tabela de Clientes.
+  */
+
+void inclusaoCliente (struct Index_Cliente indicesCliente[], struct Cliente cliente[],
+                   struct Index_Cidade indicesCidade[], struct Cidade cidades[],
+                   struct Index_Pais indicesPais[], struct Pais paises[],
+                   int &cont, int indexCidade, int indexPais, int cod){
+
+    cliente[cont].codigo = cod;
+    cout << "Nome: ";
+    cin >> cliente[cont].nome;
+    cout << "Endereco: ";
+    cin >> cliente[cont].endereco;
+    cout << "Codigo Cidade: ";
+    cin >> cliente[cont].codigo_cidade;
+    cliente[cont].exclusao = 0;
+
+    for(;buscaAleatoriaCidade(cidades, indicesCidade, paises, indicesPais, indexCidade,
+                              indexPais, cliente[cont].codigo_cidade);) {
+        cout << "\nInforme outro codigo da Cidade: "; cin >> cliente[cont].codigo_cidade;
+    }
+    int i;
+    for (i = cont - 1; indicesCliente[i].codigo > cod; i--){
+        indicesCliente[i+1].codigo = indicesCliente[i].codigo;
+        indicesCliente[i+1].index = indicesCliente[i].index;
+    }
+    indicesCliente[i+1].codigo = cod;
+    indicesCliente[i+1].index = cont;
     cont++;
     cout << "\n\nInclusao realizada com Sucesso!\n";
 }
@@ -280,11 +335,25 @@ int main()
             } else if(i == 2) {
                 if(index_cidade > 0) {
                     cout << "Informe o codigo do Guia: "; cin >> i;
-                    if(buscaAleatoriaGuia(guias, indicesGuias, index_guia, i)) {
+                    if(!buscaAleatoriaGuia(guias, indicesGuias, index_guia, i)) {
+                        cout << "\nInforme os dados para inclusao: \n";
                         inclusaoGuia(indicesGuias, guias,
                                      indicesCidades, cidades,
                                      indicesPaises, paises,
                                      index_guia, index_cidade, index_pais, i);
+                    }
+                } else cout << "Insira pelo menos uma cidade!\n";
+                system("pause");
+                system("cls");
+            } else if(i == 3) {
+                if(index_cidade > 0) {
+                    cout << "Informe o codigo do Cliente: "; cin >> i;
+                    if(!buscaAleatoriaCliente(clientes, indicesClientes, index_cliente, i)) {
+                        cout << "\nInforme os dados para inclusao: \n";
+                        inclusaoCliente(indicesClientes, clientes,
+                                     indicesCidades, cidades,
+                                     indicesPaises, paises,
+                                     index_cliente, index_cidade, index_pais, i);
                     }
                 } else cout << "Insira pelo menos uma cidade!\n";
                 system("pause");
@@ -294,6 +363,7 @@ int main()
             cout << "O que deseja fazer?\n-> Ler dados - 0\n-> Imprimir Dados - 1\n";
             cin >> i;
         }
+        system("cls");
     }
 
 
