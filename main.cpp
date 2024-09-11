@@ -472,7 +472,9 @@ void inclusaoVenda (struct Index_Venda indicesVendas[], struct Venda vendas[],
         cout << "\nInforme outro numero de pessoas: "; cin >> vendas[cont].quantidade_pessoas;
     }
     pacotes[vendas[cont].codigo_pacote].total_participantes += vendas[cont].quantidade_pessoas;
-    cout << "\n\nO valor total foi: " << vendas[cont].quantidade_pessoas*pacotes[vendas[cont].codigo_pacote].valor_por_pessoa;
+
+    vendas[cont].valor_total = vendas[cont].quantidade_pessoas * pacotes[vendas[cont].codigo_pacote].valor_por_pessoa
+    cout << "\n\nO valor total foi: " << vendas[cont].valor_total;
 
 
     int i;
