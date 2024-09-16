@@ -158,7 +158,6 @@ bool buscaAleatoriaCliente (struct Cliente *cliente, struct Index_Cliente *indic
     int i = 0, f = cont;
     int m = (i + f) / 2;
     for (; f >= i && cod != indicesCliente[m].codigo; m = (i + f) / 2){
-        cout << indicesCliente[m].codigo << " - " << m << endl;
         if (cod > indicesCliente[m].codigo)
             i = m + 1;
         else
@@ -181,7 +180,6 @@ bool buscaAleatoriaPacote (struct Pacote *pacote, struct Index_Pacote *indicesPa
     int i = 0, f = cont;
     int m = (i + f) / 2;
     for (; f >= i && cod != indicesPacote[m].codigo; m = (i + f) / 2){
-        cout << indicesPacote[m].codigo << " - " << m << endl;
         if (cod > indicesPacote[m].codigo)
             i = m + 1;
         else
@@ -285,10 +283,42 @@ void lerCidade(struct Cidade *cidades, struct Index_Cidade *indicesCidades,
   * INICIO - 2) função que permite a inclusão de novos registros na tabela de Guias.
   */
 
+void lerGuias(struct Index_Guia indicesGuia[], struct Guia guia[],
+              struct Cidade *cidades, struct Index_Cidade *indicesCidades,
+               struct Pais *paises, struct Index_Pais *indicesPaises,
+               int &index, int indexCidade, int indexPais) {
+    system("cls");
+    int continuar = 0, i = index;
+    while(continuar == 0) {
+        cout << "Informe o codigo do Guia: "; cin >> guia[i].codigo;
+        indicesGuia[i].codigo = guia[i].codigo;
+        indicesGuia[i].index = i;
+        cout << "Nome: ";
+        cin >> guia[i].nome;
+        cout << "Endereco: ";
+        cin >> guia[i].endereco;
+        cout << "Telefone: ";
+        cin >> guia[i].telefone;
+        cout << "Codigo Cidade: ";
+        cin >> guia[i].codigo_cidade;
+        guia[i].exclusao = 0;
+        for(;buscaAleatoriaCidade(cidades, indicesCidades, paises, indicesPaises, indexCidade,
+                              indexPais, guia[i].codigo_cidade) && guia[i].codigo_cidade != 0;) {
+            cout << "\nInforme outro codigo da Cidade: "; cin >> guia[i].codigo_cidade;
+        }
+        cout << "Deseja inserir mais Guias? Informe 1 para parar e 0 para continuar\n";
+        cin >> continuar;
+        system("cls");
+        i++;
+    }
+    index = i;
+}
+
 void inclusaoGuia (struct Index_Guia indicesGuia[], struct Guia guia[],
                    struct Index_Cidade indicesCidade[], struct Cidade cidades[],
                    struct Index_Pais indicesPais[], struct Pais paises[],
                    int &cont, int indexCidade, int indexPais, int cod){
+    cont++;
 
     guia[cont].codigo = cod;
     cout << "Nome: ";
@@ -313,7 +343,6 @@ void inclusaoGuia (struct Index_Guia indicesGuia[], struct Guia guia[],
     }
     indicesGuia[i+1].codigo = cod;
     indicesGuia[i+1].index = cont;
-    cont++;
     cout << "\n\nInclusao realizada com Sucesso!\n";
 }
 
@@ -321,10 +350,40 @@ void inclusaoGuia (struct Index_Guia indicesGuia[], struct Guia guia[],
   * INICIO - 3) função que permite a inclusão de novos registros na tabela de Clientes.
   */
 
+void lerClientes(struct Index_Cliente indicesCliente[], struct Cliente clientes[],
+              struct Cidade *cidades, struct Index_Cidade *indicesCidades,
+               struct Pais *paises, struct Index_Pais *indicesPaises,
+               int &index, int indexCidade, int indexPais) {
+    system("cls");
+    int continuar = 0, i = index;
+    while(continuar == 0) {
+        cout << "Informe o codigo do Cliente: "; cin >> clientes[i].codigo;
+        indicesCliente[i].codigo = clientes[i].codigo;
+        indicesCliente[i].index = i;
+        cout << "Nome: ";
+        cin >> clientes[i].nome;
+        cout << "Endereco: ";
+        cin >> clientes[i].endereco;
+        cout << "Codigo Cidade: ";
+        cin >> clientes[i].codigo_cidade;
+        clientes[i].exclusao = 0;
+        for(;buscaAleatoriaCidade(cidades, indicesCidades, paises, indicesPaises, indexCidade,
+                              indexPais, clientes[i].codigo_cidade) && clientes[i].codigo_cidade != 0;) {
+            cout << "\nInforme outro codigo da Cidade: "; cin >> clientes[i].codigo_cidade;
+        }
+        cout << "Deseja inserir mais Clientes? Informe 1 para parar e 0 para continuar\n";
+        cin >> continuar;
+        system("cls");
+        i++;
+    }
+    index = i;
+}
+
 void inclusaoCliente (struct Index_Cliente indicesCliente[], struct Cliente cliente[],
                    struct Index_Cidade indicesCidade[], struct Cidade cidades[],
                    struct Index_Pais indicesPais[], struct Pais paises[],
                    int &cont, int indexCidade, int indexPais, int cod){
+    cont++;
 
     cliente[cont].codigo = cod;
     cout << "Nome: ";
@@ -339,7 +398,6 @@ void inclusaoCliente (struct Index_Cliente indicesCliente[], struct Cliente clie
                               indexPais, cliente[cont].codigo_cidade) && cliente[cont].codigo_cidade != 0;) {
         cout << "\nInforme outro codigo da Cidade: "; cin >> cliente[cont].codigo_cidade;
     }
-    if(cliente[cont].codigo_cidade == 0) return;
     int i;
     for (i = cont - 1; indicesCliente[i].codigo > cod; i--){
         indicesCliente[i+1].codigo = indicesCliente[i].codigo;
@@ -347,7 +405,6 @@ void inclusaoCliente (struct Index_Cliente indicesCliente[], struct Cliente clie
     }
     indicesCliente[i+1].codigo = cod;
     indicesCliente[i+1].index = cont;
-    cont++;
     cout << "\n\nInclusao realizada com Sucesso!\n";
 }
 
@@ -439,6 +496,41 @@ void exclusaoGuia(struct Guia *guias, struct Index_Guia *indicesGuias,
   * INICIO - 6) função que permite a inclusão de novos registros na tabela de Pacote.
   */
 
+void lerPacotes(struct Index_Pacote indicesPacotes[], struct Pacote pacotes[],
+                     struct Index_Guia indicesGuias[], struct Guia guias[],
+                   struct Index_Cidade indicesCidade[], struct Cidade cidades[],
+                   struct Index_Pais indicesPais[], struct Pais paises[],
+                   int &index, int indexGuia, int indexCidade, int indexPais) {
+    system("cls");
+    int continuar = 0, i = index;
+    while(continuar == 0) {
+
+        cout << "Informe o codigo do Cliente: "; cin >> pacotes[i].codigo;
+        indicesPacotes[i].codigo = pacotes[i].codigo;
+        indicesPacotes[i].index = i;
+        cout << "Descricao: ";
+        cin >> pacotes[i].descricao;
+        cout << "Valor por pessoa: ";
+        cin >> pacotes[i].valor_por_pessoa;
+        cout << "Quant Max Participantes: ";
+        cin >> pacotes[i].quant_max_participantes;
+        cout << "Codigo Guia: ";
+        cin >> pacotes[i].codigo_guia;
+
+        for(;!buscaAleatoriaGuia(guias,indicesGuias,indexGuia,pacotes[i].codigo_guia,
+                            cidades,indicesCidade,indexCidade,
+                            paises,indicesPais,indexPais) && pacotes[i].codigo_guia != 0;) {
+            cout << "\nInforme outro codigo de Guia: "; cin >> pacotes[i].codigo_guia;
+        }
+
+        cout << "Deseja inserir mais Pacotes? Informe 1 para parar e 0 para continuar\n";
+        cin >> continuar;
+        system("cls");
+        i++;
+    }
+    index = i;
+}
+
 void inclusaoPacote (struct Index_Pacote indicesPacotes[], struct Pacote pacotes[],
                      struct Index_Guia indicesGuias[], struct Guia guias[],
                    struct Index_Cidade indicesCidade[], struct Cidade cidades[],
@@ -472,6 +564,55 @@ void inclusaoPacote (struct Index_Pacote indicesPacotes[], struct Pacote pacotes
 /**
   * INICIO - 7) função para permitir a inclusão de novos registros na tabela de Vendas.
   */
+
+void lerVendas(struct Index_Venda indicesVendas[], struct Venda vendas[],
+                    struct Index_Pacote indicesPacotes[], struct Pacote pacotes[],
+                     struct Index_Cliente indicesClientes[], struct Cliente clientes[],
+                     struct Index_Guia indicesGuias[], struct Guia guias[],
+                   struct Index_Cidade indicesCidades[], struct Cidade cidades[],
+                   struct Index_Pais indicesPais[], struct Pais paises[],
+                   int &index, int &indexPacote, int &indexCliente, int &indexGuia, int &indexCidade, int &indexPais) {
+    system("cls");
+    int continuar = 0, i = index;
+    while(continuar == 0) {
+
+        cout << "Informe o codigo da Venda: "; cin >> vendas[i].codigo;
+        indicesVendas[i].codigo = vendas[i].codigo;
+        indicesVendas[i].index = i;
+
+        cout << "Codigo Cliente: ";
+        cin >> vendas[i].codigo_cliente;
+        for(;!buscaAleatoriaCliente(clientes, indicesClientes, indexCliente, vendas[i].codigo_cliente,
+                                cidades, indicesCidades, indexCidade,
+                                paises, indicesPais, indexPais) && vendas[i].codigo_cliente != 0;) {
+            cout << "\nInforme outro codigo de Cliente: "; cin >> vendas[i].codigo_cliente;
+        }
+        if(vendas[i].codigo_cliente == 0) return;
+        cout << "Codigo Pacote: ";
+        cin >> vendas[i].codigo_pacote;
+        for(;!buscaAleatoriaPacote(pacotes, indicesPacotes, indexPacote, vendas[i].codigo_pacote,
+                             guias, indicesGuias, indexGuia,
+                             cidades, indicesCidades, indexCidade,
+                             paises, indicesPais, indexPais) && vendas[i].codigo_pacote != 0;) {
+            cout << "\nInforme outro codigo do Pacote: "; cin >> vendas[i].codigo_pacote;
+        }
+        if(vendas[i].codigo_pacote == 0) return;
+
+        for(;vendas[i].quantidade_pessoas > -1 && vendas[i].quantidade_pessoas <= (pacotes[vendas[i].codigo_pacote].quant_max_participantes - pacotes[vendas[i].codigo_pacote].total_participantes);) {
+            cout << "\nInforme outro numero de pessoas: "; cin >> vendas[i].quantidade_pessoas;
+        }
+        pacotes[vendas[i].codigo_pacote].total_participantes += vendas[i].quantidade_pessoas;
+
+        vendas[i].valor_total = vendas[i].quantidade_pessoas * pacotes[vendas[i].codigo_pacote].valor_por_pessoa;
+        cout << "\n\nO valor total foi: " << vendas[i].valor_total;
+
+        cout << "Deseja inserir mais Vendas? Informe 1 para parar e 0 para continuar\n";
+        cin >> continuar;
+        system("cls");
+        i++;
+    }
+    index = i;
+}
 
 void inclusaoVenda (struct Index_Venda indicesVendas[], struct Venda vendas[],
                     struct Index_Pacote indicesPacotes[], struct Pacote pacotes[],
@@ -567,8 +708,12 @@ int main()
                 lerCidade(cidades, indicesCidades, paises, indicesPaises, index_cidade, index_pais);
             } else if(i == 2) {
                 if(index_cidade > 0) {
-                    cout << "Informe o codigo do Guia: "; cin >> i;
-                    if(!buscaAleatoriaGuia(guias, indicesGuias, index_guia, i,
+                    if(!index_guia < 1) {
+                         cout << "Informe o codigo do Guia: "; cin >> i;
+                    }
+                    if(index_guia < 1) {
+                        lerGuias(indicesGuias, guias, cidades, indicesCidades, paises, indicesPaises, index_guia, index_cidade, index_pais);
+                    } else if(!buscaAleatoriaGuia(guias, indicesGuias, index_guia, i,
                                            cidades, indicesCidades, index_cidade,
                                            paises, indicesPaises, index_pais)) {
                         cout << "\nInforme os dados para inclusao: \n";
@@ -581,8 +726,14 @@ int main()
                 system("pause");
             } else if(i == 3) {
                 if(index_cidade > 0) {
-                    cout << "Informe o codigo do Cliente: "; cin >> i;
-                    if(!buscaAleatoriaCliente(clientes, indicesClientes, index_cliente, i,
+                    cout << index_cliente << endl;
+                    system("pause");
+                    if(!index_cliente < 1) {
+                         cout << "Informe o codigo do Cliente: "; cin >> i;
+                    }
+                    if(index_cliente < 1) {
+                        lerClientes(indicesClientes, clientes, cidades, indicesCidades, paises, indicesPaises, index_cliente, index_cidade, index_pais);
+                    } else if(!buscaAleatoriaCliente(clientes, indicesClientes, index_cliente, i,
                                               cidades, indicesCidades, index_cidade,
                                               paises, indicesPaises, index_pais)) {
                         cout << "\nInforme os dados para inclusao: \n";
@@ -595,8 +746,16 @@ int main()
                 system("pause");
             } else if(i == 4) {
                 if(index_guia > 0) {
-                    cout << "Informe o codigo do Pacote: "; cin >> i;
-                    if(!buscaAleatoriaPacote(pacotes, indicesPacotes, index_pacote, i,
+                    if(!index_pacote < 1) {
+                         cout << "Informe o codigo do Pacote: "; cin >> i;
+                    }
+                    if(index_pacote < 1) {
+                        lerPacotes(indicesPacotes, pacotes,
+                                       indicesGuias, guias,
+                                       indicesCidades, cidades,
+                                       indicesPaises, paises,
+                                       index_pacote, index_guia, index_cidade, index_pais);
+                    } else if(!buscaAleatoriaPacote(pacotes, indicesPacotes, index_pacote, i,
                              guias, indicesGuias, index_guia,
                              cidades, indicesCidades, index_cidade,
                              paises, indicesPaises, index_pais)) {
@@ -611,8 +770,18 @@ int main()
                 system("pause");
             } else if(i == 5) {
                 if(index_pacote > 0 && index_cliente > 0) {
-                    cout << "Informe o codigo da Venda: "; cin >> i;
-                    if(!buscaAleatoriaVenda(vendas, indicesVendas, index_venda, i,
+                    if(!index_venda < 1) {
+                         cout << "Informe o codigo do Pacote: "; cin >> i;
+                    }
+                    if(index_venda < 1) {
+                        lerVendas(indicesVendas, vendas,
+                                      indicesPacotes, pacotes,
+                                      indicesClientes, clientes,
+                                      indicesGuias, guias,
+                                      indicesCidades, cidades,
+                                      indicesPaises, paises,
+                                      index_venda, index_pacote, index_cliente, index_guia, index_cidade, index_pais);
+                    } else if(!buscaAleatoriaVenda(vendas, indicesVendas, index_venda, i,
                                             pacotes, indicesPacotes, index_pacote,
                                             clientes, indicesClientes, index_cliente,
                                             guias, indicesGuias, index_guia,
