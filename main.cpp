@@ -176,7 +176,7 @@ bool buscaAleatoriaCliente (struct Cliente *cliente, struct Index_Cliente *indic
 bool buscaAleatoriaPacote (struct Pacote *pacote, struct Index_Pacote *indicesPacote, int &cont, int cod,
                             struct Guia *guia, struct Index_Guia * indicesGuia, int &contGuia,
                         struct Cidade *cidade, struct Index_Cidade *indicesCidade, int &contCidade,
-                        struct Pais *paises, struct Index_Pais *indicesPaises, int &contPais){
+                        struct Pais *paises, struct Index_Pais *indicesPaises, int &contPais, int &index){
     int i = 0, f = cont;
     int m = (i + f) / 2;
     for (; f >= i && cod != indicesPacote[m].codigo; m = (i + f) / 2){
@@ -187,6 +187,7 @@ bool buscaAleatoriaPacote (struct Pacote *pacote, struct Index_Pacote *indicesPa
     }
     if (cod == indicesPacote[m].codigo){
         i = indicesPacote[m].index;
+        index = i;
         cout << "\tDescricao: " << pacote[i].descricao;
         buscaAleatoriaGuia(guia, indicesGuia, contGuia, pacote[i].codigo_guia,
                            cidade, indicesCidade, contCidade,
@@ -214,12 +215,13 @@ bool buscaAleatoriaVenda (struct Venda *venda, struct Index_Venda *indicesVenda,
         else
             f = m - 1;
     }
+    int indexDoPacote;
     if (cod == indicesVenda[m].codigo){
         i = indicesVenda[m].index;
         buscaAleatoriaPacote(pacote, indicesPacote, contPacote, venda[i].codigo_pacote,
                              guia, indicesGuia, contGuia,
                              cidade, indicesCidade, contCidade,
-                             paises, indicesPaises, contPais);
+                             paises, indicesPaises, contPais, indexDoPacote);
         buscaAleatoriaCliente(cliente, indicesCliente, contCliente, venda[i].codigo_cliente,
                              cidade, indicesCidade, contCidade,
                              paises, indicesPaises, contPais);
@@ -266,6 +268,7 @@ void lerCidade(struct Cidade *cidades, struct Index_Cidade *indicesCidades,
             for(;buscaAleatoriaPais(paises, indicesPaises, indexPais, cidades[i].codigo_pais);) {
                 cout << "\nInforme outro codigo do pais: "; cin >> cidades[i].codigo_pais;
             }
+            system("pause");
             cout << "Deseja inserir mais cidades? Informe 1 para parar e 0 para continuar\n";
             cin >> continuar;
             system("cls");
@@ -306,6 +309,7 @@ void lerGuias(struct Index_Guia indicesGuia[], struct Guia guia[],
                               indexPais, guia[i].codigo_cidade) && guia[i].codigo_cidade != 0;) {
             cout << "\nInforme outro codigo da Cidade: "; cin >> guia[i].codigo_cidade;
         }
+        system("pause");
         cout << "Deseja inserir mais Guias? Informe 1 para parar e 0 para continuar\n";
         cin >> continuar;
         system("cls");
@@ -336,6 +340,7 @@ void inclusaoGuia (struct Index_Guia indicesGuia[], struct Guia guia[],
         cout << "\nInforme outro codigo da Cidade: "; cin >> guia[cont].codigo_cidade;
     }
     if(guia[cont].codigo_cidade == 0) return ;
+    system("pause");
     int i;
     for (i = cont - 1; indicesGuia[i].codigo > cod; i--){
         indicesGuia[i+1].codigo = indicesGuia[i].codigo;
@@ -371,6 +376,7 @@ void lerClientes(struct Index_Cliente indicesCliente[], struct Cliente clientes[
                               indexPais, clientes[i].codigo_cidade) && clientes[i].codigo_cidade != 0;) {
             cout << "\nInforme outro codigo da Cidade: "; cin >> clientes[i].codigo_cidade;
         }
+        system("pause");
         cout << "Deseja inserir mais Clientes? Informe 1 para parar e 0 para continuar\n";
         cin >> continuar;
         system("cls");
@@ -395,9 +401,10 @@ void inclusaoCliente (struct Index_Cliente indicesCliente[], struct Cliente clie
     cliente[cont].exclusao = 0;
 
     for(;buscaAleatoriaCidade(cidades, indicesCidade, paises, indicesPais, indexCidade,
-                              indexPais, cliente[cont].codigo_cidade) && cliente[cont].codigo_cidade != 0;) {
+                              indexPais, cliente[cont].codigo_cidade);) {
         cout << "\nInforme outro codigo da Cidade: "; cin >> cliente[cont].codigo_cidade;
     }
+    system("pause");
     int i;
     for (i = cont - 1; indicesCliente[i].codigo > cod; i--){
         indicesCliente[i+1].codigo = indicesCliente[i].codigo;
@@ -505,13 +512,15 @@ void lerPacotes(struct Index_Pacote indicesPacotes[], struct Pacote pacotes[],
     int continuar = 0, i = index;
     while(continuar == 0) {
 
-        cout << "Informe o codigo do Cliente: "; cin >> pacotes[i].codigo;
+        cout << "Informe o codigo do Pacote: "; cin >> pacotes[i].codigo;
         indicesPacotes[i].codigo = pacotes[i].codigo;
         indicesPacotes[i].index = i;
         cout << "Descricao: ";
         cin >> pacotes[i].descricao;
         cout << "Valor por pessoa: ";
         cin >> pacotes[i].valor_por_pessoa;
+        cout << "Total Participantes: ";
+        cin >> pacotes[i].total_participantes;
         cout << "Quant Max Participantes: ";
         cin >> pacotes[i].quant_max_participantes;
         cout << "Codigo Guia: ";
@@ -522,6 +531,7 @@ void lerPacotes(struct Index_Pacote indicesPacotes[], struct Pacote pacotes[],
                             paises,indicesPais,indexPais) && pacotes[i].codigo_guia != 0;) {
             cout << "\nInforme outro codigo de Guia: "; cin >> pacotes[i].codigo_guia;
         }
+        system("pause");
 
         cout << "Deseja inserir mais Pacotes? Informe 1 para parar e 0 para continuar\n";
         cin >> continuar;
@@ -541,6 +551,8 @@ void inclusaoPacote (struct Index_Pacote indicesPacotes[], struct Pacote pacotes
     cout << "Informe a descricao do Pacote: "; cin >> pacotes[cont].descricao;
     cout << "Informe o valor por pessoa: "; cin >> pacotes[cont].valor_por_pessoa;
     cout << "Informe o num total de participante: "; cin >> pacotes[cont].total_participantes;
+    cout << pacotes[cont].total_participantes << endl;
+    system("pause");
     cout << "Informe a quantidade maxima de participante: "; cin >> pacotes[cont].quant_max_participantes;
     cout << "Informe o codigo do Guia: "; cin >> pacotes[cont].codigo_guia;
 
@@ -550,6 +562,7 @@ void inclusaoPacote (struct Index_Pacote indicesPacotes[], struct Pacote pacotes
         cout << "\nInforme outro codigo da Guia: "; cin >> pacotes[cont].codigo_guia;
     }
     if(pacotes[cont].codigo_guia == 0) return;
+    system("pause");
     int i;
     for (i = cont - 1; indicesPacotes[i].codigo > cod; i--){
         indicesPacotes[i+1].codigo = indicesPacotes[i].codigo;
@@ -588,25 +601,29 @@ void lerVendas(struct Index_Venda indicesVendas[], struct Venda vendas[],
             cout << "\nInforme outro codigo de Cliente: "; cin >> vendas[i].codigo_cliente;
         }
         if(vendas[i].codigo_cliente == 0) return;
+        system("pause");
+
+        int indexDoPacote;
         cout << "Codigo Pacote: ";
         cin >> vendas[i].codigo_pacote;
         for(;!buscaAleatoriaPacote(pacotes, indicesPacotes, indexPacote, vendas[i].codigo_pacote,
                              guias, indicesGuias, indexGuia,
                              cidades, indicesCidades, indexCidade,
-                             paises, indicesPais, indexPais) && vendas[i].codigo_pacote != 0;) {
+                             paises, indicesPais, indexPais, indexDoPacote) && vendas[i].codigo_pacote != 0;) {
             cout << "\nInforme outro codigo do Pacote: "; cin >> vendas[i].codigo_pacote;
         }
         if(vendas[i].codigo_pacote == 0) return;
 
-        for(;vendas[i].quantidade_pessoas > -1 && vendas[i].quantidade_pessoas <= (pacotes[vendas[i].codigo_pacote].quant_max_participantes - pacotes[vendas[i].codigo_pacote].total_participantes);) {
+        cout << "\nInforme a quantidade de pessoas: "; cin >> vendas[i].quantidade_pessoas;
+        for(;vendas[i].quantidade_pessoas > -1 && vendas[i].quantidade_pessoas >= (pacotes[indexDoPacote].quant_max_participantes - pacotes[indexDoPacote].total_participantes)+1;) {
             cout << "\nInforme outro numero de pessoas: "; cin >> vendas[i].quantidade_pessoas;
         }
-        pacotes[vendas[i].codigo_pacote].total_participantes += vendas[i].quantidade_pessoas;
+        pacotes[indexDoPacote].total_participantes += vendas[i].quantidade_pessoas;
 
-        vendas[i].valor_total = vendas[i].quantidade_pessoas * pacotes[vendas[i].codigo_pacote].valor_por_pessoa;
-        cout << "\n\nO valor total foi: " << vendas[i].valor_total;
+        vendas[i].valor_total = vendas[i].quantidade_pessoas * pacotes[indexDoPacote].valor_por_pessoa;
+        cout << "\n\nO valor total foi: RS" << vendas[i].valor_total;
 
-        cout << "Deseja inserir mais Vendas? Informe 1 para parar e 0 para continuar\n";
+        cout << "\n\nDeseja inserir mais Vendas? Informe 1 para parar e 0 para continuar\n";
         cin >> continuar;
         system("cls");
         i++;
@@ -624,15 +641,16 @@ void inclusaoVenda (struct Index_Venda indicesVendas[], struct Venda vendas[],
 
     vendas[cont].codigo = cod;
 
-
+    int indexDoPacote;
     cout << "Informe o codigo do Pacote: "; cin >> vendas[cont].codigo_pacote;
     for(;!buscaAleatoriaPacote(pacotes, indicesPacotes, indexPacote, vendas[cont].codigo_pacote,
                              guias, indicesGuias, indexGuia,
                              cidades, indicesCidades, indexCidade,
-                             paises, indicesPais, indexPais) && vendas[cont].codigo_pacote != 0;) {
+                             paises, indicesPais, indexPais, indexDoPacote) && vendas[cont].codigo_pacote != 0;) {
         cout << "\nInforme outro codigo do Pacote: "; cin >> vendas[cont].codigo_pacote;
     }
     if(vendas[cont].codigo_pacote == 0) return;
+    system("pause");
 
     cout << "Informe o codigo do Cliente: "; cin >> vendas[cont].codigo_cliente;
 
@@ -642,15 +660,16 @@ void inclusaoVenda (struct Index_Venda indicesVendas[], struct Venda vendas[],
         cout << "\nInforme outro codigo de Cliente: "; cin >> vendas[cont].codigo_cliente;
     }
     if(vendas[cont].codigo_cliente == 0) return;
+    system("pause");
 
-    cout << "Informe o numero de pessoas: "; cin >> vendas[cont].quantidade_pessoas;
-    for(;vendas[cont].quantidade_pessoas > -1 && vendas[cont].quantidade_pessoas <= (pacotes[vendas[cont].codigo_pacote].quant_max_participantes - pacotes[vendas[cont].codigo_pacote].total_participantes);) {
+    cout << "\nInforme a quantidade de pessoas: "; cin >> vendas[cont].quantidade_pessoas;
+    for(;vendas[cont].quantidade_pessoas > -1 && vendas[cont].quantidade_pessoas >= (pacotes[indexDoPacote].quant_max_participantes - pacotes[indexDoPacote].total_participantes)+1;) {
         cout << "\nInforme outro numero de pessoas: "; cin >> vendas[cont].quantidade_pessoas;
     }
-    pacotes[vendas[cont].codigo_pacote].total_participantes += vendas[cont].quantidade_pessoas;
+    pacotes[indexDoPacote].total_participantes += vendas[cont].quantidade_pessoas;
 
-    vendas[cont].valor_total = vendas[cont].quantidade_pessoas * pacotes[vendas[cont].codigo_pacote].valor_por_pessoa;
-    cout << "\n\nO valor total foi: " << vendas[cont].valor_total;
+    vendas[cont].valor_total = vendas[cont].quantidade_pessoas * pacotes[indexDoPacote].valor_por_pessoa;
+    cout << "\n\nO valor total foi: RS" << vendas[cont].valor_total;
 
 
     int i;
@@ -722,12 +741,13 @@ int main()
                                      indicesPaises, paises,
                                      index_guia, index_cidade, index_pais, i);
                     }
-                } else cout << "Insira pelo menos uma cidade!\n";
-                system("pause");
+                    system("pause");
+                } else {
+                    cout << "Insira pelo menos uma cidade!\n";
+                    system("pause");
+                }
             } else if(i == 3) {
                 if(index_cidade > 0) {
-                    cout << index_cliente << endl;
-                    system("pause");
                     if(!index_cliente < 1) {
                          cout << "Informe o codigo do Cliente: "; cin >> i;
                     }
@@ -742,8 +762,11 @@ int main()
                                      indicesPaises, paises,
                                      index_cliente, index_cidade, index_pais, i);
                     }
-                } else cout << "Insira pelo menos uma cidade!\n";
-                system("pause");
+                    system("pause");
+                } else {
+                    cout << "Insira pelo menos uma cidade!\n";
+                    system("pause");
+                }
             } else if(i == 4) {
                 if(index_guia > 0) {
                     if(!index_pacote < 1) {
@@ -758,7 +781,7 @@ int main()
                     } else if(!buscaAleatoriaPacote(pacotes, indicesPacotes, index_pacote, i,
                              guias, indicesGuias, index_guia,
                              cidades, indicesCidades, index_cidade,
-                             paises, indicesPaises, index_pais)) {
+                             paises, indicesPaises, index_pais, i)) {
                         cout << "\nInforme os dados para inclusao: \n";
                         inclusaoPacote(indicesPacotes, pacotes,
                                        indicesGuias, guias,
@@ -766,8 +789,11 @@ int main()
                                        indicesPaises, paises,
                                        index_pacote, index_guia, index_cidade, index_pais, i);
                     }
-                } else cout << "Insira pelo menos uma guia!\n";
-                system("pause");
+                    system("pause");
+                } else {
+                    cout << "Insira pelo menos um Guia!\n";
+                    system("pause");
+                }
             } else if(i == 5) {
                 if(index_pacote > 0 && index_cliente > 0) {
                     if(!index_venda < 1) {
@@ -796,8 +822,11 @@ int main()
                                       indicesPaises, paises,
                                       index_venda, index_pacote, index_cliente, index_guia, index_cidade, index_pais, i);
                     }
-                } else cout << "Insira pelo menos um pacote e um cliente!\n";
-                system("pause");
+                    system("pause");
+                } else {
+                    cout << "Insira pelo menos um pacote e um cliente!\n";
+                    system("pause");
+                }
             }
 
 
